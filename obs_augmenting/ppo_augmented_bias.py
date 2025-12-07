@@ -59,7 +59,7 @@ class MOERForecastWrapper(gym.ObservationWrapper):
         
         # Define the space for our new error vector
         self.observation_space['moer_forecast_error'] = gym.spaces.Box(
-            low=0, 
+            low=-np.inf, 
             high=np.inf, 
             shape=(self.forecast_horizon,), 
             dtype=np.float32
@@ -98,7 +98,7 @@ def make_env(dp: str, site: str, seed: int):
     env = EVChargingEnv(gen)
     
     # This adds the error vector to the dictionary
-    env = MOERForecastWrapper(env, error_table_path="moer_errors/error_std.csv")
+    env = MOERForecastWrapper(env, error_table_path="moer_errors/error_bias.csv")
     
     # 3. Flatten at the very end
     # FlattenObservation will automatically flatten the new 'moer_forecast_error' 
@@ -162,7 +162,7 @@ if __name__ == "__main__":
     cfg = parse_args()
 
     folder_name = (
-        f'{cfg["site"]}_ppo_{cfg["train_date_period"]}_lr{cfg["lr"]}_seed{cfg["seed"]}'
+        f'{cfg["site"]}_ppo_{cfg["train_date_period"]}_lr{cfg["lr"]}_seed{cfg["seed"]}_bias'
     )
     save_dir = os.path.join(SAVE_BASE_DIR, folder_name)
     os.makedirs(save_dir, exist_ok=True)
